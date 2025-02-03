@@ -11,3 +11,13 @@ jobs:
     
     steps:
     - uses: actions/checkout@v4
+    - name: Login to Docker Hub
+      run: echo ${{ secrets.DOCKERHUB_PASSWORD }} | docker login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+    - name: Build the docker image
+      run: docker build -t firstapp:latest .
+    - name: Tag the image
+      run: docker tag firstapp:latest jawadc/firstapp:latest
+    - name: Push the image
+      run: docker push jawadc/firstapp:latest
+
+
