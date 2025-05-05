@@ -1,14 +1,14 @@
 const express = require('express');
 const app = express();
-const mongoose = require('mongoose')
+// const mongoose = require('mongoose')
 const port = process.env.PORT || 3000;
 
-try {
-  mongoose.connect("mongodb://db:27017/myapp")
-  console.log("DB connected")
-} catch (error) {
-  console.log("DB connection failed")
-}
+// try {
+//   mongoose.connect("mongodb://db:27017/myapp")
+//   console.log("DB connected")
+// } catch (error) {
+//   console.log("DB connection failed")
+// }
 
 app.use(express.json());
 
