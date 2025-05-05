@@ -1,0 +1,35 @@
+name: Manually Deploy the app on Server
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag_id:
+        description: 'Image Tag Id'
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Copy SSH PEM file from secrets
+      run: |
+        echo "${{ secrets.SERVER_SSH_KEY }}" > ci_ssh_key
+        sed -i 's/\r//' ci_ssh_key
+        chmod 600 ci_ssh_key
+
+    - name: Add server's key to known hosts
+      run: |
+        mkdir ~/.ssh
+        ssh-keyscan ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+
+    - name: Copy and Run Docker Compose file
+      run: |
+        scp -i ci_ssh_key docker-compose.yml \
+          ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }}:/home/${{ secrets.SERVER_USER }}/docker-compose.yml
+        ssh -i ci_ssh_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} \
+          -t "docker compose up -d"
